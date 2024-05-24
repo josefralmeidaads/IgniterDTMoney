@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { api } from "../api/api";
 import { createContext } from "use-context-selector";
 
@@ -27,17 +27,17 @@ export const TransactionsContext = createContext({} as ITransactionsContextType)
 export const TransactionsProvider = ({ children }: ITransactionsProviderProps) => {
  const [transactions, setTransactions] = useState<ITransactions[]>([]);
 
- const fetchTransactions = async(query?: string) => {
-    const response = await api.get('transactions', {
-      params: {
-        q: query,
-      }
-    })  
+ const fetchTransactions = useCallback(async(query?: string) => {
+  const response = await api.get('transactions', {
+    params: {
+      q: query,
+    }
+  })  
 
-    setTransactions(response.data);
- }
+  setTransactions(response.data);
+}, [])
 
- const createTransaction = async(data: ITransactions) => {
+ const createTransaction = useCallback(async(data: ITransactions) => {
   const response = await api.post('transactions', {
     description: data.description,
     category: data.category,
@@ -47,7 +47,7 @@ export const TransactionsProvider = ({ children }: ITransactionsProviderProps) =
   })
 
   setTransactions((prevState) => [...prevState, response.data])
- }
+ }, [])
 
  const searchTransactions = async(query: string) => {
   const searchTransactionsFiltered = transactions.filter((transaction) => transaction.description.includes(query))
@@ -56,7 +56,7 @@ export const TransactionsProvider = ({ children }: ITransactionsProviderProps) =
 
  useEffect(() => {
   fetchTransactions()
- }, [])
+ }, [fetchTransactions])
 
  return (
   <TransactionsContext.Provider value={{

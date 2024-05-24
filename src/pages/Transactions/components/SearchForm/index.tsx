@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import '@radix-ui/themes/styles.css';
 
 import { MagnifyingGlass } from 'phosphor-react';
@@ -15,7 +15,7 @@ const searchFormSchema = z.object({
 
 type ISearchFormInputs = z.infer<typeof searchFormSchema>;
 
-const SearchForm: React.FC = () => {
+const SearchFormMemo = () => {
   const { searchTransactions, fetchTransactions } = useContextSelector(TransactionsContext, (context) => {
     return {
       searchTransactions: context.searchTransactions,
@@ -51,4 +51,4 @@ const SearchForm: React.FC = () => {
   );
 }
 
-export default SearchForm;
+export const SearchForm = memo(SearchFormMemo);
